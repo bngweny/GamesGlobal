@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "secretStore": "LocalSecretsFile",
+      "type": "identityapp.secretStore",
+      "connectionId": "AzureAd:ClientSecret",
+      "dynamicId": null
+    }
+  }
+}

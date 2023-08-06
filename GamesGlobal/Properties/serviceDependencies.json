@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "type": "identityapp",
+      "connectionId": "AzureAd:ClientSecret",
+      "dynamicId": null
+    }
+  }
+}
