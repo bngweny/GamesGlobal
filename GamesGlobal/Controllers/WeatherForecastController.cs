@@ -26,6 +26,7 @@ namespace GamesGlobal.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
+            var user1 = User.Identity.Name;
             var user = await _graphServiceClient.Me.Request().GetAsync();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

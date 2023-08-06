@@ -4,7 +4,7 @@ namespace GamesGlobal.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public List<ShoppingItem>? Cart { get; set; }
+        public List<ShoppingItemDto>? Cart { get; set; }
 
     }
 }

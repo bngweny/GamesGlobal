@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GamesGlobal.Infrastructure.DbContexts;
+using GamesGlobal.Infrastructure.Interfaces;
+using GamesGlobal.Infrastructure.Models;
+using GamesGlobal.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +13,65 @@ namespace GamesGlobal.Controllers
     [ApiController]
     public class ShoppingListController : ControllerBase
     {
+        private readonly IShoppingListItemRepository _shoppingListItemRepository;
+        public ShoppingListController(IShoppingListItemRepository shoppingListItemRepository)
+        {
+            _shoppingListItemRepository = shoppingListItemRepository;
+        }
+
         // GET: api/<ShoppingListController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<ShoppingItem>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return await _shoppingListItemRepository.GetAllShoppingListItemsAsync();
         }
 
         // GET api/<ShoppingListController>/5
         [HttpGet("{id}")]
-        public string Get(int id) 
+        public async Task<ShoppingItem> Get(int itemId) 
         {
-            return "value";
+            return await _shoppingListItemRepository.GetShoppingListItemByIdAsync(itemId);
         }
 
         // POST api/<ShoppingListController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async void Post([FromBody] ShoppingItemDto value)
         {
+            await _shoppingListItemRepository.CreateShoppingListItemAsync(
+                new ShoppingItem
+                {
+                    CreatedAt = DateTime.Now,
+                    Description = value.Description,
+                    ImageUrl = value.ImageUrl,
+                    Name = value.Name,
+                    UpdatedAt = DateTime.Now,
+                    Username = "user@user.com",
+                }
+            );
         }
 
         // PUT api/<ShoppingListController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async void Put(int id, [FromBody] ShoppingItemDto value)
         {
+            await _shoppingListItemRepository.UpdateShoppingListItemAsync(
+                new ShoppingItem
+                {
+                    CreatedAt = DateTime.Now,
+                    Description = value.Description,
+                    ImageUrl = value.ImageUrl,
+                    Name = value.Name,
+                    UpdatedAt = DateTime.Now,
+                    Username = "user@user.com",
+                }
+            );
         }
 
         // DELETE api/<ShoppingListController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async void Delete(int itemId)
         {
+            await _shoppingListItemRepository.DeleteShoppingListItemAsync(itemId);
         }
     }
 }

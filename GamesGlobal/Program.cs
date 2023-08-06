@@ -1,6 +1,11 @@
+using GamesGlobal.Infrastructure.DbContexts;
+using GamesGlobal.Infrastructure.Interfaces;
+using GamesGlobal.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 
@@ -41,7 +46,7 @@ builder.Services.AddSwaggerGen(c =>
                     { "f2dbe1bf-be20-4de2-b3b6-2618f2933adc/access_as_user", "Impersonate the current user" }
                 }
             }
-        }
+        },
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -59,6 +64,16 @@ builder.Services.AddSwaggerGen(c =>
                     }
                 });
 });
+
+var connection = builder.Configuration.GetConnectionString("SqlConnection");
+builder.Services.AddDbContextFactory<GamesGlobalDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
+});
+
+builder.Services.AddScoped<IShoppingListItemRepository, ShoppingListItemRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 var app = builder.Build();
 
