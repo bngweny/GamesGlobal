@@ -2,6 +2,7 @@
 using GamesGlobal.Infrastructure.Interfaces;
 using GamesGlobal.Infrastructure.Models;
 using GamesGlobal.Models;
+using GamesGlobal.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,12 @@ namespace GamesGlobal.Controllers
     public class ShoppingListController : ControllerBase
     {
         private readonly IShoppingListItemRepository _shoppingListItemRepository;
-        public ShoppingListController(IShoppingListItemRepository shoppingListItemRepository)
+        private readonly IMinioService _minioService;
+
+        public ShoppingListController(IShoppingListItemRepository shoppingListItemRepository, IMinioService minioService)
         {
             _shoppingListItemRepository = shoppingListItemRepository;
+            _minioService = minioService;
         }
 
         // GET: api/<ShoppingListController>
@@ -72,6 +76,43 @@ namespace GamesGlobal.Controllers
         public async void Delete(int itemId)
         {
             await _shoppingListItemRepository.DeleteShoppingListItemAsync(itemId);
+        }
+
+        [HttpPost("{itemId}/upload")]
+        public async Task<IActionResult> UploadImage(int itemId, [FromForm] UploadImageDto model)
+        {
+            try
+            {
+                var shoppingItem = await _shoppingListItemRepository.GetShoppingListItemByIdAsync(itemId);
+                if (shoppingItem == null)
+                {
+                    return NotFound();
+                }
+
+                if (model.Image == null || model.Image.Length <= 0)
+                {
+                    return BadRequest("Image file is missing or empty.");
+                }
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await model.Image.CopyToAsync(memoryStream);
+                    var objectName = $"shopping_item_{itemId}_{Guid.NewGuid()}.jpg"; 
+                    var bucketName = "shopping-item-images";
+                    var contentType = "image/jpg";
+
+                    await _minioService.UploadObjectAsync(bucketName, objectName, contentType);
+
+                    shoppingItem.ImageUrl = objectName;
+                    await _shoppingListItemRepository.UpdateShoppingListItemAsync(shoppingItem);
+
+                    return Ok(new { Message = "Image uploaded successfully." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"An error occurred: {ex.Message}" });
+            }
         }
     }
 }
