@@ -9,7 +9,7 @@
     {
         private readonly MinioClient _minioClient;
 
-        public MinioService(string minioServerUrl, string accessKey, string secretKey)
+        public MinioService()
         {
             _minioClient = new MinioClient()
                 .WithEndpoint("localhost:9000")

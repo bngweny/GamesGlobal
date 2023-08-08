@@ -1,11 +1,11 @@
 using GamesGlobal.Infrastructure.DbContexts;
 using GamesGlobal.Infrastructure.Interfaces;
 using GamesGlobal.Infrastructure.Repositories;
+using GamesGlobal.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 
@@ -43,7 +43,8 @@ builder.Services.AddSwaggerGen(c =>
                 {
                     { "openid", "OpenID Connect" },
                     { "offline_access", "Offline Access" },
-                    { "f2dbe1bf-be20-4de2-b3b6-2618f2933adc/access_as_user", "Impersonate the current user" }
+                    { "f2dbe1bf-be20-4de2-b3b6-2618f2933adc/access_as_user", "Impersonate the current user" },
+                    { "User.Read", "Read user profile" }
                 }
             }
         },
@@ -73,7 +74,7 @@ builder.Services.AddDbContextFactory<GamesGlobalDbContext>(options =>
 
 builder.Services.AddScoped<IShoppingListItemRepository, ShoppingListItemRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
+builder.Services.AddSingleton<IMinioService, MinioService>();
 
 var app = builder.Build();
 
