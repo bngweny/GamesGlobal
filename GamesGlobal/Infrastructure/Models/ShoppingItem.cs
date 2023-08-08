@@ -26,7 +26,5 @@ namespace GamesGlobal.Infrastructure.Models
         [Required]
         public string Username { get; set; }  // Foreign key to User table
 
-        [ForeignKey("Username")]
-        public User User { get; set; }  // Navigation property for User
     }
 }

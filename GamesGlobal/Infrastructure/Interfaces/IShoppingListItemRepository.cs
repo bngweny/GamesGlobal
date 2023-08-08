@@ -6,8 +6,8 @@ namespace GamesGlobal.Infrastructure.Interfaces
     {
         Task<ShoppingItem> GetShoppingListItemByIdAsync(int itemId);
         Task<IEnumerable<ShoppingItem>> GetAllShoppingListItemsAsync();
-        Task CreateShoppingListItemAsync(ShoppingItem item);
-        Task UpdateShoppingListItemAsync(ShoppingItem item);
+        Task<ShoppingItem> CreateShoppingListItemAsync(ShoppingItem item);
+        Task<ShoppingItem> UpdateShoppingListItemAsync(int itemId, ShoppingItem item);
         Task DeleteShoppingListItemAsync(int itemId);
     }
 }

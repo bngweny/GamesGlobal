@@ -7,7 +7,7 @@ namespace GamesGlobal.Infrastructure.Interfaces
         Task<User> GetUserByUsernameAsync(string username);
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task CreateUserAsync(User user);
-        Task UpdateUserAsync(User user);
+        Task UpdateUserAsync(string username, User user);
         Task DeleteUserAsync(string username);
     }
 }

@@ -33,10 +33,20 @@ namespace GamesGlobal.Infrastructure.Repositories
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(string username, User user)
         {
             using var dbContext = _dbContextFactory.CreateDbContext();
-            dbContext.Entry(user).State = EntityState.Modified;
+            var existingUser = await dbContext.Users.FindAsync(username);
+
+            if (existingUser == null)
+            {
+                throw new ArgumentException($"User with username {username} not found.");
+            }
+
+            // Update the properties of the existing user with the new values
+            existingUser.Email = user.Email;
+
+            dbContext.Entry(existingUser).State = EntityState.Modified;
             await dbContext.SaveChangesAsync();
         }
 

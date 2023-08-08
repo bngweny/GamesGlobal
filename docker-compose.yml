@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  gamesglobal:
+    image: ${DOCKER_REGISTRY-}gamesglobal
+    build:
+      context: .
+      dockerfile: GamesGlobal/Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - AzureAd__Audience=f2dbe1bf-be20-4de2-b3b6-2618f2933adc
+      - AzureAd__Authority=https://login.microsoftonline.com/a1154a74-758b-4184-a4c8-6fdd3f27310e
+      - AzureAd__Instance=https://login.microsoftonline.com/
+      - AzureAd__Domain=brandonngwenyahotmail.onmicrosoft.com
+      - AzureAd__TenantId=a1154a74-758b-4184-a4c8-6fdd3f27310e
+      - AzureAd__ClientId=f2dbe1bf-be20-4de2-b3b6-2618f2933adc
+      - AzureAd__CallbackPath=/signin-oidc
+      - AzureAd__Scopes=openid offline_access f2dbe1bf-be20-4de2-b3b6-2618f2933adc/access_as_user
+      - AzureAd__Resource=api://f2dbe1bf-be20-4de2-b3b6-2618f2933adc
+      - MicrosoftGraph__BaseUrl=https://graph.microsoft.com/v1.0
+      - MicrosoftGraph__Scopes=user.read
+      - ConnectionStrings__SqlConnection=Server=(LocalDb)\\MSSQLLocalDB;Database=MyLocalDb;Integrated Security=true;
+
+  minio:
+    image: minio/minio:RELEASE.2022-02-26T03-36-00Z
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+    command: server /data
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: sql-server-password
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  minio-data:
+  sqlserver-data:
